@@ -5,20 +5,61 @@ import { CheckCircle2, Circle, Coffee, Brain, PenTool, CheckCircle } from 'lucid
 import { createClient } from '@/lib/supabase/client';
 
 const ritualSteps = [
-  { id: 'hydration', label: 'Hydration', icon: Coffee, description: 'Drink a glass of water.' },
-  { id: 'meditation', label: 'Mindfulness', icon: Brain, description: '3 minutes of deep breathing.' },
-  { id: 'priorities', label: 'Plan Day', icon: CheckCircle, description: 'Set your 3 daily priorities.' },
-  { id: 'braindump', label: 'Brain Dump', icon: PenTool, description: 'Clear your mind of lingering tasks.' },
+  { id: 'hydration', label: 'Hydration', icon: Coffee, description: 'Drink a glass of water.', dbColumn: 'ritual_hydration' },
+  { id: 'meditation', label: 'Mindfulness', icon: Brain, description: '3 minutes of deep breathing.', dbColumn: 'ritual_meditation' },
+  { id: 'priorities', label: 'Plan Day', icon: CheckCircle, description: 'Set your 3 daily priorities.', dbColumn: 'ritual_priorities' },
+  { id: 'braindump', label: 'Brain Dump', icon: PenTool, description: 'Clear your mind of lingering tasks.', dbColumn: 'ritual_braindump' },
 ];
 
 export default function MorningRitual() {
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const supabase = createClient();
 
-  const toggleStep = (id: string) => {
-    setCompletedSteps(prev => 
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    );
+  useEffect(() => {
+    fetchRitualStatus();
+  }, []);
+
+  const fetchRitualStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Use RPC to get/create daily log
+    const { data: log } = await supabase
+      .rpc('get_or_create_daily_log', { p_user_id: user.id });
+
+    if (log) {
+      const activeSteps = ritualSteps
+        .filter(step => log[step.dbColumn as keyof typeof log])
+        .map(step => step.id);
+      setCompletedSteps(activeSteps);
+    }
+  };
+
+  const toggleStep = async (stepId: string) => {
+    const step = ritualSteps.find(s => s.id === stepId);
+    if (!step) return;
+
+    const isCurrentlyDone = completedSteps.includes(stepId);
+    const newSteps = isCurrentlyDone 
+      ? completedSteps.filter(s => s !== stepId) 
+      : [...completedSteps, stepId];
+    
+    setCompletedSteps(newSteps);
+
+    // Persist specific step completion AND total completion status
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const updatePayload = { 
+      [step.dbColumn]: !isCurrentlyDone,
+      morning_ritual_completed: newSteps.length === ritualSteps.length 
+    };
+
+    await supabase
+      .from('daily_logs')
+      .update(updatePayload)
+      .eq('user_id', user.id)
+      .eq('date', new Date().toISOString().split('T')[0]);
   };
 
   const isRitualComplete = completedSteps.length === ritualSteps.length;

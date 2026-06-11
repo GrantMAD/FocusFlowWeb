@@ -10,21 +10,42 @@ export default function StreakCard() {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchStreak = async () => {
+    const setupSubscription = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data } = await supabase
-        .from('streaks')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      fetchStreak();
+      
+      const channel = supabase
+        .channel('streak_changes')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'streaks',
+          filter: `user_id=eq.${user.id}`, // Added filter
+        }, () => {
+          fetchStreak();
+        })
+        .subscribe();
 
-      if (data) setStreak(data as Streak);
+      return () => { supabase.removeChannel(channel); };
     };
 
-    fetchStreak();
+    setupSubscription();
   }, []);
+
+  const fetchStreak = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('streaks')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (data) setStreak(data as Streak);
+  };
 
   return (
     <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-6 rounded-2xl shadow-lg text-white">
