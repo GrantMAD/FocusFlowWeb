@@ -10,11 +10,34 @@ type TaskStore = {
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   toggleTask: (id: string) => Promise<void>;
+  setTasks: (tasks: Task[]) => void;
+  updateTaskOrder: (tasks: Task[]) => Promise<void>;
 };
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
   isLoading: false,
+
+  setTasks: (tasks) => set({ tasks }),
+
+  updateTaskOrder: async (tasks) => {
+    const supabase = createClient();
+    
+    // Perform individual updates for each task
+    const promises = tasks.map((task, index) => 
+      supabase
+        .from('tasks')
+        .update({ task_order: index })
+        .eq('id', task.id)
+    );
+
+    const results = await Promise.all(promises);
+    const errors = results.filter(r => r.error).map(r => r.error);
+
+    if (errors.length > 0) {
+      console.error('Errors updating task order:', errors);
+    }
+  },
 
   fetchTasks: async () => {
     set({ isLoading: true });
@@ -27,7 +50,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       .from('tasks')
       .select('*')
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .order('task_order', { ascending: true }); // Changed from order to task_order
 
     if (data) set({ tasks: data as Task[], isLoading: false });
     else set({ isLoading: false });
