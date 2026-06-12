@@ -7,14 +7,22 @@ export function useSubscription() {
   const store = useSubscriptionStore();
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    let unsub: (() => void) | undefined;
+
+    const init = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         store.fetchSubscription(user.id);
-        const unsub = store.subscribeToChanges(user.id);
-        return unsub;
+        unsub = store.subscribeToChanges(user.id);
       }
-    });
+    };
+
+    init();
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   return { isPro: store.isPro, status: store.status, isLoading: store.isLoading };

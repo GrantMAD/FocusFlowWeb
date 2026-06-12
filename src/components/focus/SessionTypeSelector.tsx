@@ -1,19 +1,29 @@
 'use client';
 
+import { useState } from 'react';
 import { useFocusStore } from '@/stores/focusStore';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Timer, Users, Zap, Settings2 } from 'lucide-react';
+import Modal from '@/components/ui/Modal';
 
 const sessionTypes = [
-  { id: 'pomodoro', label: 'Pomodoro', icon: Timer, description: '25m work, 5m break', premium: false },
-  { id: 'deep_work', label: 'Deep Work', icon: Zap, description: '60m intense focus', premium: true },
-  { id: 'body_doubling', label: 'Body Doubling', icon: Users, description: 'Simulated presence', premium: true },
-  { id: 'custom', label: 'Custom', icon: Settings2, description: 'Set your own time', premium: true },
+  { id: 'pomodoro', label: 'Pomodoro', icon: Timer, description: '15m work, 5m break', premium: false, duration: 15 * 60 },
+  { id: 'deep_work', label: 'Deep Work', icon: Zap, description: '60m intense focus', premium: true, duration: 60 * 60 },
+  { id: 'body_doubling', label: 'Body Doubling', icon: Users, description: 'Simulated presence', premium: true, duration: 25 * 60 },
+  { id: 'custom', label: 'Custom', icon: Settings2, description: 'Set your own time', premium: true, duration: 0 },
 ];
 
-export default function SessionTypeSelector() {
-  const { startSession, isActive } = useFocusStore();
+export default function SessionTypeSelector({ onCustomSelect }: { onCustomSelect: () => void }) {
+  const { isActive, settimeLeft } = useFocusStore();
   const { isPro } = useSubscription();
+
+  const handleSelect = (type: typeof sessionTypes[0]) => {
+    if (type.id === 'custom') {
+      onCustomSelect();
+    } else {
+      settimeLeft(type.duration);
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -25,7 +35,7 @@ export default function SessionTypeSelector() {
             <button
               key={type.id}
               disabled={isActive || isLocked}
-              onClick={() => startSession(type.id as any, type.id === 'deep_work' ? 60 * 60 : 25 * 60)}
+              onClick={() => handleSelect(type)}
               className={`p-3 rounded-xl border-2 transition-all text-left relative ${
                 isLocked ? 'opacity-50 grayscale' : 'hover:border-purple-200 hover:bg-purple-50'
               } border-gray-50`}

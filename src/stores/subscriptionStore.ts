@@ -44,8 +44,11 @@ export const useSubscriptionStore = create<SubscriptionStore>((set) => ({
   // Listens for webhook-triggered updates in real time
   subscribeToChanges: (userId) => {
     const supabase = createClient();
+    // Unique channel name per call to avoid 'already subscribed' errors
+    const channelId = `web_sub_${userId}_${Math.random().toString(36).substring(7)}`;
+    
     const channel = supabase
-      .channel('web_subscription_changes')
+      .channel(channelId)
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',

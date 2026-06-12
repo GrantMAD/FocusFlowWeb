@@ -2,28 +2,43 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useSubscription } from '@/hooks/useSubscription';
-import { Volume2, VolumeX, CloudRain, Wind, Waves, Trees } from 'lucide-react';
+import { Volume2, VolumeX, CloudRain, Wind, Waves, Trees, Coffee, Flame } from 'lucide-react';
 
 const sounds = [
-  { id: 'rain', label: 'Rain', icon: CloudRain, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', premium: false }, // Placeholder URLs
-  { id: 'white_noise', label: 'White Noise', icon: Volume2, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', premium: false },
-  { id: 'forest', label: 'Forest', icon: Trees, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', premium: true },
-  { id: 'ocean', label: 'Ocean', icon: Waves, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', premium: true },
+  { id: 'rain', label: 'Rain', icon: CloudRain, url: '/sounds/rain.wav', premium: false },
+  { id: 'white_noise', label: 'White Noise', icon: Volume2, url: '/sounds/white_noise.wav', premium: false },
+  { id: 'forest', label: 'Forest', icon: Trees, url: '/sounds/forest.wav', premium: true },
+  { id: 'ocean', label: 'Ocean', icon: Waves, url: '/sounds/ocean.wav', premium: true },
+  { id: 'cafe', label: 'Cafe', icon: Coffee, url: '/sounds/cafe.wav', premium: true },
+  { id: 'fire', label: 'Fire', icon: Flame, url: '/sounds/fire.wav', premium: true },
 ];
 
 export default function AmbientSoundPicker() {
   const [currentSound, setCurrentSound] = useState<string | null>(null);
+  const [volume, setVolume] = useState(0.5);
+  const [error, setError] = useState<string | null>(null);
   const { isPro } = useSubscription();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
   const toggleSound = (sound: typeof sounds[0]) => {
+    setError(null);
     if (currentSound === sound.id) {
       audioRef.current?.pause();
       setCurrentSound(null);
     } else {
       if (audioRef.current) {
         audioRef.current.src = sound.url;
-        audioRef.current.play();
+        audioRef.current.play().catch(e => {
+          console.error("Playback failed", e);
+          setError(`Failed to play ${sound.label}. The source might be blocked or unavailable.`);
+          setCurrentSound(null);
+        });
         setCurrentSound(sound.id);
       }
     }
@@ -31,7 +46,28 @@ export default function AmbientSoundPicker() {
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-      <h3 className="font-bold text-gray-900 mb-4">Ambient Sound</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-bold text-gray-900">Ambient Sound</h3>
+        {currentSound && (
+          <div className="flex items-center gap-2">
+            <Volume2 className="w-4 h-4 text-gray-400" />
+            <input 
+              type="range" 
+              min="0" max="1" step="0.01" 
+              value={volume} 
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+            />
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-[11px] text-red-600 font-medium">
+          {error}
+        </div>
+      )}
+      
       <div className="grid grid-cols-2 gap-3">
         {sounds.map((sound) => {
           const isLocked = sound.premium && !isPro;
@@ -42,7 +78,7 @@ export default function AmbientSoundPicker() {
               disabled={isLocked}
               onClick={() => toggleSound(sound)}
               className={`p-3 rounded-xl border-2 transition-all text-left relative ${
-                isLocked ? 'opacity-50 grayscale' : 'hover:border-purple-200 hover:bg-purple-50'
+                isLocked ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:border-purple-200 hover:bg-purple-50'
               } ${isActive ? 'border-purple-600 bg-purple-50' : 'border-gray-50'}`}
             >
               <sound.icon className={`w-5 h-5 mb-2 ${isActive ? 'text-purple-600' : 'text-gray-400'}`} />
