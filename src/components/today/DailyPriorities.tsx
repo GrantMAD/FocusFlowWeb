@@ -6,26 +6,34 @@ import { createClient } from '@/lib/supabase/client';
 import { Plus, CheckCircle2, Circle } from 'lucide-react';
 import AddTaskModal from '@/components/tasks/AddTaskModal';
 
+import { useAuthStore } from '@/stores/authStore';
+
 export default function DailyPriorities() {
   const { tasks, toggleTask, fetchTasks } = useTaskStore();
+  const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const priorities = tasks.filter(t => t.is_daily_priority);
 
   useEffect(() => {
+    if (!user) return;
+
     const supabase = createClient();
     const channel = supabase
-      .channel('tasks_changes')
+      .channel(`tasks_changes_${user.id}_${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
         table: 'tasks',
+        filter: `user_id=eq.${user.id}`,
       }, () => {
         fetchTasks();
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [fetchTasks]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, fetchTasks]);
 
   return (
     <>

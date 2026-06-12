@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from 'sonner';
+import AuthInitializer from '@/components/layout/AuthInitializer';
 
 export default function RootLayout({
   children,
@@ -30,7 +31,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <AuthInitializer>
+          {children}
+        </AuthInitializer>
         <Toaster position="top-center" richColors />
       </body>
     </html>

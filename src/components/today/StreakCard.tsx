@@ -5,43 +5,40 @@ import { Flame, Trophy, Target } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Streak } from '@/types';
 
+import { useAuthStore } from '@/stores/authStore';
+
 export default function StreakCard() {
   const [streak, setStreak] = useState<Streak | null>(null);
+  const { user } = useAuthStore();
   const supabase = createClient();
 
   useEffect(() => {
-    const setupSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      fetchStreak();
-      
-      const channel = supabase
-        .channel('streak_changes')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'streaks',
-          filter: `user_id=eq.${user.id}`, // Added filter
-        }, () => {
-          fetchStreak();
-        })
-        .subscribe();
-
-      return () => { supabase.removeChannel(channel); };
-    };
-
-    setupSubscription();
-  }, []);
-
-  const fetchStreak = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    fetchStreak(user.id);
+    
+    const channel = supabase
+      .channel(`streak_changes_${user.id}_${Math.random().toString(36).substring(7)}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'streaks',
+        filter: `user_id=eq.${user.id}`,
+      }, () => {
+        fetchStreak(user.id);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  const fetchStreak = async (userId: string) => {
     const { data } = await supabase
       .from('streaks')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .single();
 
     if (data) setStreak(data as Streak);

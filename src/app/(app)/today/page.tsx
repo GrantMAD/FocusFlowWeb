@@ -6,6 +6,7 @@ import { useTaskStore } from '@/stores/taskStore';
 import DailyPriorities from '@/components/today/DailyPriorities';
 import MorningRitual from '@/components/today/MorningRitual';
 import StreakCard from '@/components/today/StreakCard';
+import QuickCapture from '@/components/today/QuickCapture';
 
 export default function TodayPage() {
   const { fetchProfile } = useAuthStore();
@@ -31,7 +32,7 @@ export default function TodayPage() {
         
         <div className="space-y-8">
           <StreakCard />
-          {/* Quick Capture / Brain Dump component could go here */}
+          <QuickCapture />
         </div>
       </div>
     </div>

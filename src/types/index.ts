@@ -92,3 +92,12 @@ export type Subscription = {
   current_period_ends_at: string | null;
   trial_ends_at: string | null;
 };
+
+export type BrainDumpItem = {
+  id: string;
+  user_id: string;
+  content: string;
+  date: string;
+  converted_to_task_id: string | null;
+  created_at: string;
+};
