@@ -14,16 +14,16 @@ export default async function ProgressPage() {
   const { data: stats } = await supabase.rpc('get_weekly_stats', { p_user_id: user.id });
   const data = stats ? stats[0] : null;
 
-  // Placeholder data for chart until we implement daily breakdown
-  const chartData = [
-    { day: 'Mon', minutes: 120, tasks: 5 },
-    { day: 'Tue', minutes: 80, tasks: 3 },
-    { day: 'Wed', minutes: 160, tasks: 8 },
-    { day: 'Thu', minutes: 100, tasks: 4 },
-    { day: 'Fri', minutes: 200, tasks: 10 },
-    { day: 'Sat', minutes: 40, tasks: 2 },
-    { day: 'Sun', minutes: 0, tasks: 0 },
-  ];
+  // Fetch dynamic daily breakdown
+  const { data: breakdown } = await supabase.rpc('get_daily_stats_breakdown', { 
+    p_user_id: user.id 
+  });
+
+  const chartData = (breakdown || []).map((d: any) => ({
+    day: d.day_label,
+    minutes: Number(d.total_minutes),
+    tasks: Number(d.tasks_count),
+  }));
 
   return (
     <div className="max-w-6xl mx-auto p-8">

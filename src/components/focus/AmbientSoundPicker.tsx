@@ -26,6 +26,19 @@ export default function AmbientSoundPicker() {
     }
   }, [volume]);
 
+  // Listen for the custom event to stop sound when timer ends
+  useEffect(() => {
+    const handleStopSound = () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setCurrentSound(null);
+      }
+    };
+
+    window.addEventListener('stop-ambient-sound', handleStopSound);
+    return () => window.removeEventListener('stop-ambient-sound', handleStopSound);
+  }, []);
+
   const toggleSound = (sound: typeof sounds[0]) => {
     setError(null);
     if (currentSound === sound.id) {

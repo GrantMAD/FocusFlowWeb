@@ -48,10 +48,15 @@ export default function FocusPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Listen for session completion to show post-session modal
+  // Listen for session completion to show post-session modal and stop sound
   useEffect(() => {
     if (!isActive && currentSession && timeLeft === 0) {
       setShowPostSession(true);
+      // Automatically stop any playing ambient sound when the timer ends
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent('stop-ambient-sound');
+        window.dispatchEvent(event);
+      }
     }
   }, [isActive, currentSession, timeLeft]);
 

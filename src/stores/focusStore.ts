@@ -73,18 +73,18 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
   resumeSession: () => set({ isActive: true }),
 
   tick: () => {
-    const { timeLeft, isActive, endSession } = get();
+    const { timeLeft, isActive } = get();
     if (isActive && timeLeft > 0) {
       set({ timeLeft: timeLeft - 1 });
     } else if (isActive && timeLeft === 0) {
-      endSession(true);
+      set({ isActive: false }); // Stop the timer but don't call endSession yet
     }
   },
 
   settimeLeft: (time) => set({ timeLeft: time }),
 
   endSession: async (completed, moodAfter) => {
-    const { currentSession, timeLeft, mode } = get();
+    const { currentSession, mode } = get();
     if (!currentSession) {
       console.log("No current session found");
       return;
@@ -97,7 +97,9 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
       return;
     }
 
-    const actualMinutes = Math.floor((currentSession.planned_minutes! * 60 - timeLeft) / 60);
+    // Use a fixed planned_minutes if it's already on currentSession
+    const plannedMinutes = currentSession.planned_minutes || 0;
+    const actualMinutes = completed ? plannedMinutes : 0; 
 
     const sessionData = {
       ...currentSession,
@@ -107,25 +109,21 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
       mood_after: moodAfter,
       ended_at: new Date().toISOString(),
     };
-    console.log("Persisting session data:", sessionData);
 
     const { error } = await supabase.from('focus_sessions').insert([sessionData]);
-
-    if (error) {
-      console.error("Supabase insert error:", error);
-    } else {
-      console.log("Session persisted successfully");
-    }
 
     if (!error && completed) {
       set((state) => ({ sessionsCompletedToday: state.sessionsCompletedToday + 1 }));
     }
 
+    // Logic: Only go to break if it was a Pomodoro work session
+    const isPomodoro = currentSession.session_type === 'pomodoro';
+    
     set({
       currentSession: null,
       isActive: false,
-      timeLeft: mode === 'work' ? 5 * 60 : 15 * 60,
-      mode: mode === 'work' ? 'break' : 'work',
+      timeLeft: (isPomodoro && mode === 'work') ? 5 * 60 : 15 * 60,
+      mode: (isPomodoro && mode === 'work') ? 'break' : 'work',
     });
   },
 }));
