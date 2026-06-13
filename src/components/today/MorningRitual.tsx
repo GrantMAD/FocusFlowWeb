@@ -65,14 +65,14 @@ export default function MorningRitual() {
   const isRitualComplete = completedSteps.length === ritualSteps.length;
 
   return (
-    <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <section className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-300">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Morning Ritual</h2>
-          <p className="text-sm text-gray-500">Start your day with intention.</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Morning Ritual</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Start your day with intention.</p>
         </div>
         {isRitualComplete && (
-          <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase">
+          <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold rounded-full uppercase">
             Complete
           </span>
         )}
@@ -87,23 +87,23 @@ export default function MorningRitual() {
               onClick={() => toggleStep(step.id)}
               className={`flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${
                 isDone 
-                  ? 'border-purple-600 bg-purple-50' 
-                  : 'border-gray-50 hover:border-gray-100'
+                  ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' 
+                  : 'border-gray-50 dark:border-gray-800 hover:border-gray-100 dark:hover:border-gray-700'
               }`}
             >
-              <div className={`p-2 rounded-lg ${isDone ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
+              <div className={`p-2 rounded-lg ${isDone ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}>
                 <step.icon className="w-5 h-5" />
               </div>
               <div className="flex-1">
-                <p className={`font-bold text-sm ${isDone ? 'text-purple-900' : 'text-gray-900'}`}>
+                <p className={`font-bold text-sm ${isDone ? 'text-purple-900 dark:text-purple-100' : 'text-gray-900 dark:text-gray-100'}`}>
                   {step.label}
                 </p>
-                <p className="text-xs text-gray-500">{step.description}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{step.description}</p>
               </div>
               {isDone ? (
-                <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1" />
+                <CheckCircle2 className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-1" />
               ) : (
-                <Circle className="w-5 h-5 text-gray-200 mt-1" />
+                <Circle className="w-5 h-5 text-gray-200 dark:text-gray-700 mt-1" />
               )}
             </button>
           );

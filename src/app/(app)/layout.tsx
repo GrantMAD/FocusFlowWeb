@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!profile?.onboarding_completed) redirect('/onboarding/step-1');
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
       <Sidebar />
       <main className="flex-1 overflow-auto">
         {children}

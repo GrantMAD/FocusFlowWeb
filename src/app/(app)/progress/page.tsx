@@ -28,8 +28,8 @@ export default async function ProgressPage() {
   return (
     <div className="max-w-6xl mx-auto p-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Progress</h1>
-        <p className="text-gray-500">Your focus journey, visualized.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Progress</h1>
+        <p className="text-gray-500 dark:text-gray-400">Your focus journey, visualized.</p>
       </header>
 
       {data && (

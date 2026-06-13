@@ -20,8 +20,8 @@ export default function TodayPage() {
   return (
     <div className="max-w-6xl mx-auto p-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Today</h1>
-        <p className="text-gray-500">Let's make today count.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Today</h1>
+        <p className="text-gray-500 dark:text-gray-400">Let's make today count.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

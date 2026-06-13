@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 import { Toaster } from 'sonner';
 import AuthInitializer from '@/components/layout/AuthInitializer';
+import ThemeProvider from '@/components/layout/ThemeProvider';
 
 export default function RootLayout({
   children,
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthInitializer>
-          {children}
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </AuthInitializer>
         <Toaster position="top-center" richColors />
       </body>

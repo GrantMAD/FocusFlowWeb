@@ -23,11 +23,15 @@ interface WeeklyChartProps {
 }
 
 export function WeeklyChart({ data }: WeeklyChartProps) {
+  const isDarkMode = typeof window !== 'undefined' && window.document.documentElement.classList.contains('dark');
+  const tickColor = isDarkMode ? '#9CA3AF' : '#9CA3AF'; // Using gray-400 for both for now, can refine
+  const gridColor = isDarkMode ? '#1F2937' : '#F3F4F6'; // gray-800 vs gray-100
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Focus Minutes */}
-      <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-        <h3 className="text-lg font-bold text-gray-900 mb-6">
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
           Focus Minutes (Last 7 Days)
         </h3>
 
@@ -37,7 +41,7 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#F3F4F6"
+                stroke={gridColor}
               />
               <XAxis
                 dataKey="day"
@@ -51,12 +55,15 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
                 tick={{ fontSize: 12, fill: '#9CA3AF' }}
               />
               <Tooltip
-                cursor={{ fill: '#F9FAFB' }}
+                cursor={{ fill: isDarkMode ? '#111827' : '#F9FAFB' }}
                 contentStyle={{
+                  backgroundColor: isDarkMode ? '#111827' : '#FFFFFF',
                   borderRadius: '12px',
                   border: 'none',
                   boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                  color: isDarkMode ? '#F3F4F6' : '#111827',
                 }}
+                itemStyle={{ color: isDarkMode ? '#F3F4F6' : '#111827' }}
               />
               <Bar dataKey="minutes" fill="#7C3AED" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -65,8 +72,8 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
       </div>
 
       {/* Tasks Completed */}
-      <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-        <h3 className="text-lg font-bold text-gray-900 mb-6">
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
           Tasks Completed
         </h3>
 
@@ -76,7 +83,7 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#F3F4F6"
+                stroke={gridColor}
               />
               <XAxis
                 dataKey="day"
@@ -91,10 +98,13 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
               />
               <Tooltip
                 contentStyle={{
+                  backgroundColor: isDarkMode ? '#111827' : '#FFFFFF',
                   borderRadius: '12px',
                   border: 'none',
                   boxShadow: '0 10px 15px -3px rgb(0, 0, 0, 0.1)',
+                  color: isDarkMode ? '#F3F4F6' : '#111827',
                 }}
+                itemStyle={{ color: isDarkMode ? '#F3F4F6' : '#111827' }}
               />
               <Line
                 type="monotone"

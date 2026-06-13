@@ -26,8 +26,8 @@ export default function SessionTypeSelector({ onCustomSelect }: { onCustomSelect
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-      <h3 className="font-bold text-gray-900 mb-4">Session Type</h3>
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
+      <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">Session Type</h3>
       <div className="grid grid-cols-2 gap-3">
         {sessionTypes.map((type) => {
           const isLocked = type.premium && !isPro;
@@ -37,12 +37,12 @@ export default function SessionTypeSelector({ onCustomSelect }: { onCustomSelect
               disabled={isActive || isLocked}
               onClick={() => handleSelect(type)}
               className={`p-3 rounded-xl border-2 transition-all text-left relative ${
-                isLocked ? 'opacity-50 grayscale' : 'hover:border-purple-200 hover:bg-purple-50'
-              } border-gray-50`}
+                isLocked ? 'opacity-50 grayscale' : 'hover:border-purple-200 dark:hover:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-900/10'
+              } border-gray-50 dark:border-gray-800`}
             >
-              <type.icon className="w-5 h-5 text-purple-600 mb-2" />
-              <p className="text-xs font-bold text-gray-900">{type.label}</p>
-              <p className="text-[10px] text-gray-500">{type.description}</p>
+              <type.icon className="w-5 h-5 text-purple-600 dark:text-purple-400 mb-2" />
+              <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{type.label}</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">{type.description}</p>
               {isLocked && (
                 <span className="absolute top-2 right-2 text-[8px] bg-purple-600 text-white px-1.5 py-0.5 rounded-full font-bold">
                   PRO

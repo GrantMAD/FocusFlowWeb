@@ -12,6 +12,7 @@ type AuthStore = {
   setSession: (session: Session | null) => void;
   setProfile: (profile: Profile | null) => void;
   fetchProfile: () => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ data: Profile | null; error: any }>;
   signOut: () => Promise<void>;
 };
 
@@ -37,6 +38,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       .single();
 
     if (data) set({ profile: data });
+  },
+
+  updateProfile: async (updates: Partial<Profile>) => {
+    const { user, profile } = get();
+    if (!user) return;
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      set({ profile: data });
+    }
+    return { data, error };
   },
 
   signOut: async () => {
