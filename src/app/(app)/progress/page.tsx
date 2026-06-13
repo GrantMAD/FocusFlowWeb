@@ -11,12 +11,22 @@ export default async function ProgressPage() {
   if (!user) redirect('/sign-in');
 
   // Fetch stats using the DB function
-  const { data: stats } = await supabase.rpc('get_weekly_stats', { p_user_id: user.id });
+  // Fetch allowed start date based on subscription
+  const { data: startDate } = await supabase.rpc('get_allowed_analytics_start_date', { p_user_id: user.id });
+
+  // Fallback to 7 days ago if startDate is null
+  const effectiveStartDate = startDate || new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0];
+
+  // Fetch stats using the DB function, passing the allowed start date
+  const { data: stats } = await supabase.rpc('get_weekly_stats', { 
+    p_user_id: user.id,
+    p_start_date: effectiveStartDate
+  });
   const data = stats ? stats[0] : null;
 
   // Fetch dynamic daily breakdown
   const { data: breakdown } = await supabase.rpc('get_daily_stats_breakdown', { 
-    p_user_id: user.id 
+    p_user_id: user.id
   });
 
   const chartData = (breakdown || []).map((d: any) => ({

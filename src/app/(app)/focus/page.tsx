@@ -6,6 +6,7 @@ import { useTaskStore } from '@/stores/taskStore';
 import { useSubscription } from '@/hooks/useSubscription';
 import SessionTypeSelector from '@/components/focus/SessionTypeSelector';
 import AmbientSoundPicker from '@/components/focus/AmbientSoundPicker';
+import Modal from '@/components/ui/Modal';
 import { Play, Pause, X, RotateCcw, Check, MessageSquare } from 'lucide-react';
 
 const MOODS = [
@@ -35,6 +36,7 @@ export default function FocusPage() {
 
   const [showPreSession, setShowPreSession] = useState(false);
   const [showPostSession, setShowPostSession] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string>('');
   const [moodBefore, setMoodBefore] = useState<number>(3);
   const [moodAfter, setMoodAfter] = useState<number>(3);
@@ -76,9 +78,10 @@ export default function FocusPage() {
     setShowPreSession(true);
   };
 
-  const handleStartClick = () => {
-    if (!isPro && sessionsCompletedToday >= 3) {
-      alert('You have reached your daily limit of 3 focus sessions. Upgrade to Pro for unlimited sessions!');
+  const handleStartClick = async () => {
+    const canStart = await useFocusStore.getState().canStartSession();
+    if (!canStart) {
+      setShowUpgradeModal(true);
       return;
     }
     setIsCustom(false);
@@ -264,6 +267,28 @@ export default function FocusPage() {
           </div>
         </div>
       )}
+
+      {/* Upgrade Modal */}
+      <Modal 
+        isOpen={showUpgradeModal} 
+        onClose={() => setShowUpgradeModal(false)}
+        title="Upgrade to Pro"
+      >
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            You've reached your daily limit of 3 focus sessions. Unlock unlimited sessions and premium features with Pro.
+          </p>
+          <button 
+            onClick={() => {
+              setShowUpgradeModal(false);
+              window.location.href = '/pricing';
+            }}
+            className="w-full bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg"
+          >
+            View Pricing
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

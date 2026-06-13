@@ -17,6 +17,7 @@ type FocusStore = {
   tick: () => void;
   settimeLeft: (time: number) => void;
   fetchSessionsCompletedToday: () => Promise<void>;
+  canStartSession: () => Promise<boolean>;
 };
 
 export const useFocusStore = create<FocusStore>((set, get) => ({
@@ -34,6 +35,19 @@ export const useFocusStore = create<FocusStore>((set, get) => ({
       timeLeft: 15 * 60,
       mode: 'work',
     });
+  },
+
+  canStartSession: async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { data, error } = await supabase.rpc('can_start_session', { p_user_id: user.id });
+    if (error) {
+      console.error('Error calling can_start_session:', error);
+      return false;
+    }
+    return data;
   },
 
   fetchSessionsCompletedToday: async () => {
