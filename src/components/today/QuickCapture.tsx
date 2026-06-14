@@ -2,16 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useBrainDumpStore } from '@/stores/brainDumpStore';
-import { Plus, Trash2, Brain } from 'lucide-react';
+import { Plus, Trash2, Brain, Check } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function QuickCapture() {
   const { items, fetchItems, addItem, deleteItem, convertToTask } = useBrainDumpStore();
+  const { user } = useAuthStore();
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isBrainDumpDone, setIsBrainDumpDone] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchItems();
+    fetchBrainDumpStatus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'q' && (e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -23,12 +28,35 @@ export default function QuickCapture() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const fetchBrainDumpStatus = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: log } = await supabase.rpc('get_or_create_daily_log', { p_user_id: user.id });
+    if (log) {
+      setIsBrainDumpDone(log.brain_dump_completed);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     await addItem(content.trim());
+
+    // Update brain_dump_completed in daily_logs
+    if (user && !isBrainDumpDone) {
+      const supabase = createClient();
+      await supabase
+        .from('daily_logs')
+        .update({ brain_dump_completed: true })
+        .eq('user_id', user.id)
+        .eq('date', new Date().toISOString().split('T')[0]);
+      setIsBrainDumpDone(true);
+    }
+
     setContent('');
     setIsSubmitting(false);
   };

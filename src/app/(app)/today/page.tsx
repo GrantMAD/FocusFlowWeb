@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useTaskStore } from '@/stores/taskStore';
 import DailyPriorities from '@/components/today/DailyPriorities';
 import MorningRitual from '@/components/today/MorningRitual';
+import EveningReflection from '@/components/today/EveningReflection';
 import StreakCard from '@/components/today/StreakCard';
 import QuickCapture from '@/components/today/QuickCapture';
 
@@ -28,6 +29,7 @@ export default function TodayPage() {
         <div className="lg:col-span-2 space-y-8">
           <DailyPriorities />
           <MorningRitual />
+          <EveningReflection />
         </div>
         
         <div className="space-y-8">

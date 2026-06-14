@@ -15,6 +15,21 @@ export default function DailyPriorities() {
   const priorities = tasks.filter(t => t.is_daily_priority);
 
   useEffect(() => {
+    const updatePrioritiesSet = async () => {
+      if (!user || priorities.length === 0) return;
+      
+      const supabase = createClient();
+      await supabase
+        .from('daily_logs')
+        .update({ daily_priorities_set: true })
+        .eq('user_id', user.id)
+        .eq('date', new Date().toISOString().split('T')[0]);
+    };
+
+    updatePrioritiesSet();
+  }, [priorities.length, user]);
+
+  useEffect(() => {
     if (!user) return;
 
     const supabase = createClient();

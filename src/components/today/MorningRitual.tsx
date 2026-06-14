@@ -11,8 +11,17 @@ const ritualSteps = [
   { id: 'braindump', label: 'Brain Dump', icon: PenTool, description: 'Clear your mind of lingering tasks.', dbColumn: 'ritual_braindump' },
 ];
 
+const MOODS = [
+  { value: 1, label: '😩' },
+  { value: 2, label: '😕' },
+  { value: 3, label: '😐' },
+  { value: 4, label: '🙂' },
+  { value: 5, label: '🤩' },
+];
+
 export default function MorningRitual() {
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+  const [moodMorning, setMoodMorning] = useState<number | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -32,7 +41,20 @@ export default function MorningRitual() {
         .filter(step => log[step.dbColumn as keyof typeof log])
         .map(step => step.id);
       setCompletedSteps(activeSteps);
+      setMoodMorning(log.mood_morning);
     }
+  };
+
+  const handleMoodSelect = async (mood: number) => {
+    setMoodMorning(mood);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase
+      .from('daily_logs')
+      .update({ mood_morning: mood })
+      .eq('user_id', user.id)
+      .eq('date', new Date().toISOString().split('T')[0]);
   };
 
   const toggleStep = async (stepId: string) => {
@@ -76,6 +98,27 @@ export default function MorningRitual() {
             Complete
           </span>
         )}
+      </div>
+
+      <div className="mb-8">
+        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+          Morning Mood
+        </label>
+        <div className="flex justify-between gap-2">
+          {MOODS.map(mood => (
+            <button
+              key={mood.value}
+              onClick={() => handleMoodSelect(mood.value)}
+              className={`flex-1 aspect-square text-2xl rounded-xl border-2 transition-all flex items-center justify-center ${
+                moodMorning === mood.value 
+                  ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' 
+                  : 'border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
+              }`}
+            >
+              {mood.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
