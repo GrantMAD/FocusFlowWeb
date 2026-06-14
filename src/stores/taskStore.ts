@@ -12,6 +12,9 @@ type TaskStore = {
   toggleTask: (id: string) => Promise<void>;
   setTasks: (tasks: Task[]) => void;
   updateTaskOrder: (tasks: Task[]) => Promise<void>;
+  addChunk: (taskId: string, title: string) => Promise<void>;
+  toggleChunk: (taskId: string, chunkId: string) => Promise<void>;
+  deleteChunk: (taskId: string, chunkId: string) => Promise<void>;
 };
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -19,6 +22,38 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isLoading: false,
 
   setTasks: (tasks) => set({ tasks }),
+
+  addChunk: async (taskId, title) => {
+    const task = get().tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const newChunk = { id: Math.random().toString(36).substring(7), title, completed: false };
+    const updatedChunks = [...(task.chunks || []), newChunk];
+
+    await get().updateTask(taskId, { chunks: updatedChunks });
+  },
+
+  toggleChunk: async (taskId, chunkId) => {
+    const task = get().tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const updatedChunks = task.chunks.map(chunk => 
+      chunk.id === chunkId ? { ...chunk, completed: !chunk.completed } : chunk
+    );
+
+    // Optional: If all chunks are completed, we could auto-complete the task, 
+    // but usually in ADHD apps, we let the user have that final satisfaction.
+    // However, let's at least update the chunks.
+    await get().updateTask(taskId, { chunks: updatedChunks });
+  },
+
+  deleteChunk: async (taskId, chunkId) => {
+    const task = get().tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const updatedChunks = task.chunks.filter(chunk => chunk.id !== chunkId);
+    await get().updateTask(taskId, { chunks: updatedChunks });
+  },
 
   updateTaskOrder: async (tasks) => {
     const supabase = createClient();
