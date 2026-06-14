@@ -6,6 +6,7 @@ import { useTaskStore } from '@/stores/taskStore';
 import { useSubscription } from '@/hooks/useSubscription';
 import SessionTypeSelector from '@/components/focus/SessionTypeSelector';
 import AmbientSoundPicker from '@/components/focus/AmbientSoundPicker';
+import BodyDoublingPresence from '@/components/focus/BodyDoublingPresence';
 import Modal from '@/components/ui/Modal';
 import { Play, Pause, X, RotateCcw, Check, MessageSquare } from 'lucide-react';
 
@@ -41,6 +42,8 @@ export default function FocusPage() {
   const [moodBefore, setMoodBefore] = useState<number>(3);
   const [moodAfter, setMoodAfter] = useState<number>(3);
 
+  const isBodyDoubling = currentSession?.session_type === 'body_doubling';
+
   useEffect(() => {
     fetchSessionsCompletedToday();
     fetchTasks();
@@ -70,12 +73,17 @@ export default function FocusPage() {
 
   const [customDuration, setCustomDuration] = useState(25);
   const [isCustom, setIsCustom] = useState(false);
-
-  // ... rest of the state ...
+  const [sessionType, setSessionType] = useState<string>('pomodoro');
 
   const handleCustomSelect = () => {
     setIsCustom(true);
+    setSessionType('custom');
     setShowPreSession(true);
+  };
+
+  const handleTypeSelect = (id: string, duration: number) => {
+    setSessionType(id);
+    useFocusStore.getState().settimeLeft(duration);
   };
 
   const handleStartClick = async () => {
@@ -84,15 +92,13 @@ export default function FocusPage() {
       setShowUpgradeModal(true);
       return;
     }
-    setIsCustom(false);
+    setIsCustom(sessionType === 'custom');
     setShowPreSession(true);
   };
 
   const handleStartSession = () => {
     const duration = isCustom ? customDuration * 60 : timeLeft;
-    let type: 'pomodoro' | 'deep_work' | 'custom' = 'pomodoro';
-    if (isCustom) type = 'custom';
-    else if (timeLeft === 60 * 60) type = 'deep_work';
+    let type: any = sessionType;
     
     startSession(type, duration, selectedTaskId || undefined, moodBefore);
     setShowPreSession(false);
@@ -105,17 +111,26 @@ export default function FocusPage() {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-8 bg-background text-foreground transition-colors duration-300">
-      <div className="max-w-2xl w-full flex flex-col items-center gap-12">
+    <div className="h-full flex flex-col items-center justify-center p-8 bg-background text-foreground transition-all duration-500 overflow-auto">
+      <div className={`max-w-2xl w-full flex flex-col items-center gap-8 ${isBodyDoubling && isActive ? 'mt-8' : ''}`}>
+        
+        {isBodyDoubling && isActive && (
+          <div className="w-full animate-in zoom-in fade-in duration-500">
+            <BodyDoublingPresence isActive={isActive} />
+          </div>
+        )}
+
         <header className="text-center">
           <span className={`px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider ${
             mode === 'work' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
           }`}>
-            {mode === 'work' ? 'Focus Time' : 'Break Time'}
+            {mode === 'work' ? (isBodyDoubling ? 'Body Doubling' : 'Focus Time') : 'Break Time'}
           </span>
-          <h1 className="mt-4 text-4xl font-black text-gray-900 dark:text-gray-100">
-            {mode === 'work' ? 'Get into the flow' : 'Take a breather'}
-          </h1>
+          {!isBodyDoubling && (
+            <h1 className="mt-4 text-4xl font-black text-gray-900 dark:text-gray-100">
+              {mode === 'work' ? 'Get into the flow' : 'Take a breather'}
+            </h1>
+          )}
           {!isPro && (
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-medium">
               Daily sessions: {sessionsCompletedToday} / 3
@@ -124,7 +139,7 @@ export default function FocusPage() {
         </header>
 
         <div className="relative flex flex-col items-center">
-          <div className="text-[12rem] font-black tabular-nums text-gray-900 dark:text-gray-100 leading-none transition-colors">
+          <div className={`${isBodyDoubling && isActive ? 'text-8xl' : 'text-[12rem]'} font-black tabular-nums text-gray-900 dark:text-gray-100 leading-none transition-all duration-500`}>
             {formatTime(timeLeft)}
           </div>
           
@@ -156,8 +171,12 @@ export default function FocusPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-          <SessionTypeSelector onCustomSelect={handleCustomSelect} />
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 w-full transition-opacity duration-500 ${isActive && isBodyDoubling ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}`}>
+          <SessionTypeSelector 
+            onCustomSelect={handleCustomSelect} 
+            onTypeSelect={handleTypeSelect}
+            selectedId={sessionType}
+          />
           <AmbientSoundPicker />
         </div>
       </div>
