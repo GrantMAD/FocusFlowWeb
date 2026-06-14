@@ -19,22 +19,28 @@ export default function TodayPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Today</h1>
-        <p className="text-gray-500 dark:text-gray-400">Let's make today count.</p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <DailyPriorities />
-          <MorningRitual />
-          <EveningReflection />
+    <div className="min-h-full">
+      {/* Hero Header */}
+      <div className="grad-primary pt-12 pb-24 px-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-4xl font-black text-white">Today</h1>
+          <p className="text-purple-100 font-medium">Let's make today count.</p>
         </div>
-        
-        <div className="space-y-8">
-          <StreakCard />
-          <QuickCapture />
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-8 -mt-16 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <DailyPriorities />
+            <MorningRitual />
+            <EveningReflection />
+          </div>
+          
+          <div className="space-y-8">
+            <StreakCard />
+            <QuickCapture />
+          </div>
         </div>
       </div>
     </div>

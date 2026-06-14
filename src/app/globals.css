@@ -26,3 +26,36 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+@utility grad-primary {
+  background-image: linear-gradient(to right, var(--color-purple-600), var(--color-indigo-600), var(--color-blue-600));
+}
+
+@utility grad-evening {
+  background-image: linear-gradient(to right, var(--color-indigo-900), var(--color-slate-900), #000);
+}
+
+@utility grad-success {
+  background-image: linear-gradient(to right, var(--color-emerald-500), var(--color-teal-600));
+}
+
+@utility grad-focus {
+  background-image: linear-gradient(to right, var(--color-rose-500), var(--color-orange-500));
+}
+
+@utility text-grad {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--color-purple-600), var(--color-blue-600));
+}
+
+@utility glass-card {
+  background-color: rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.dark .glass-card {
+  background-color: rgb(17 24 39 / 0.8);
+  border: 1px solid rgb(31 41 55 / 0.5);
+}

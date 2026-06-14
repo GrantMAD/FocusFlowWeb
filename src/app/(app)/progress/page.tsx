@@ -36,23 +36,31 @@ export default async function ProgressPage() {
   }));
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Progress</h1>
-        <p className="text-gray-500 dark:text-gray-400">Your focus journey, visualized.</p>
-      </header>
+    <div className="min-h-full">
+      {/* Hero Header */}
+      <div className="grad-primary pt-12 pb-24 px-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-4xl font-black text-white">Progress</h1>
+          <p className="text-purple-100 font-medium">Your focus journey, visualized.</p>
+        </div>
+      </div>
 
-      {data && (
-        <StatsGrid 
-          totalTasksCompleted={Number(data.total_tasks_completed)}
-          totalFocusMinutes={Number(data.total_focus_minutes)}
-          totalSessions={Number(data.total_sessions)}
-          avgMood={Number(data.avg_mood)}
-        />
-      )}
+      <div className="max-w-6xl mx-auto px-8 -mt-16 pb-12 space-y-8">
+        {data && (
+          <StatsGrid 
+            totalTasksCompleted={Number(data.total_tasks_completed)}
+            totalFocusMinutes={Number(data.total_focus_minutes)}
+            totalSessions={Number(data.total_sessions)}
+            avgMood={Number(data.avg_mood)}
+          />
+        )}
 
-      <WeeklyChartWrapper data={chartData} />
-      <WinsFeed />
+        <div className="glass-card p-8 rounded-2xl shadow-xl">
+          <WeeklyChartWrapper data={chartData} />
+        </div>
+        
+        <WinsFeed />
+      </div>
     </div>
   );
 }

@@ -111,73 +111,89 @@ export default function FocusPage() {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-8 bg-background text-foreground transition-all duration-500 overflow-auto">
-      <div className={`max-w-2xl w-full flex flex-col items-center gap-8 ${isBodyDoubling && isActive ? 'mt-8' : ''}`}>
-        
-        {isBodyDoubling && isActive && (
-          <div className="w-full animate-in zoom-in fade-in duration-500">
-            <BodyDoublingPresence isActive={isActive} />
-          </div>
-        )}
+    <div className="min-h-full flex flex-col relative overflow-hidden">
+      {/* Dynamic Background Glow */}
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] opacity-20 transition-all duration-1000 pointer-events-none ${
+        isActive 
+          ? (mode === 'work' ? 'bg-rose-500 animate-pulse' : 'bg-emerald-500 animate-pulse') 
+          : 'bg-purple-500'
+      }`} />
 
-        <header className="text-center">
-          <span className={`px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider ${
-            mode === 'work' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-          }`}>
-            {mode === 'work' ? (isBodyDoubling ? 'Body Doubling' : 'Focus Time') : 'Break Time'}
-          </span>
-          {!isBodyDoubling && (
-            <h1 className="mt-4 text-4xl font-black text-gray-900 dark:text-gray-100">
-              {mode === 'work' ? 'Get into the flow' : 'Take a breather'}
-            </h1>
-          )}
-          {!isPro && (
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-medium">
-              Daily sessions: {sessionsCompletedToday} / 3
-            </p>
-          )}
-        </header>
+      {/* Hero Header Overlay */}
+      <div className={`${isActive && isBodyDoubling ? 'h-0 opacity-0' : 'h-64'} grad-primary transition-all duration-500 w-full absolute top-0 left-0`} />
 
-        <div className="relative flex flex-col items-center">
-          <div className={`${isBodyDoubling && isActive ? 'text-8xl' : 'text-[12rem]'} font-black tabular-nums text-gray-900 dark:text-gray-100 leading-none transition-all duration-500`}>
-            {formatTime(timeLeft)}
-          </div>
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-8">
+        <div className={`max-w-2xl w-full flex flex-col items-center gap-8 ${isBodyDoubling && isActive ? 'mt-0' : ''}`}>
           
-          <div className="flex gap-4 mt-8">
-            {!isActive ? (
-              <button
-                onClick={handleStartClick}
-                className="w-20 h-20 rounded-full bg-purple-600 text-white flex items-center justify-center hover:bg-purple-700 transition-all shadow-xl hover:scale-105"
-              >
-                <Play className="w-10 h-10 fill-white" />
-              </button>
-            ) : (
-              <button
-                onClick={pauseSession}
-                className="w-20 h-20 rounded-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-2 border-gray-100 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-md"
-              >
-                <Pause className="w-10 h-10 fill-gray-900 dark:fill-gray-100" />
-              </button>
-            )}
+          {isBodyDoubling && isActive && (
+            <div className="w-full animate-in zoom-in fade-in duration-500">
+              <BodyDoublingPresence isActive={isActive} />
+            </div>
+          )}
 
-            {(isActive || timeLeft !== 15 * 60) && (
-              <button
-                onClick={() => endSession(false)}
-                className="w-20 h-20 rounded-full bg-white dark:bg-gray-800 text-red-500 border-2 border-red-50 dark:border-red-900/30 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 transition-all shadow-md"
-              >
-                <X className="w-10 h-10" />
-              </button>
+          <header className="text-center">
+            <span className={`px-6 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.2em] shadow-lg ${
+              mode === 'work' ? 'grad-focus text-white' : 'grad-success text-white'
+            }`}>
+              {mode === 'work' ? (isBodyDoubling ? 'Body Doubling' : 'Focus Time') : 'Break Time'}
+            </span>
+            {!isBodyDoubling && (
+              <h1 className="mt-6 text-5xl font-black text-white drop-shadow-sm">
+                {mode === 'work' ? 'Get into the flow' : 'Take a breather'}
+              </h1>
             )}
+            {!isPro && (
+              <p className="mt-3 text-sm text-purple-100 font-bold">
+                Daily sessions: {sessionsCompletedToday} / 3
+              </p>
+            )}
+          </header>
+
+          <div className="relative flex flex-col items-center">
+            <div className={`${isBodyDoubling && isActive ? 'text-8xl text-gray-900 dark:text-gray-100' : 'text-[12rem] text-white'} font-black tabular-nums leading-none transition-all duration-500 drop-shadow-xl`}>
+              {formatTime(timeLeft)}
+            </div>
+            
+            <div className="flex gap-6 mt-12">
+              {!isActive ? (
+                <button
+                  onClick={handleStartClick}
+                  className="w-24 h-24 rounded-full bg-white text-purple-600 flex items-center justify-center hover:bg-purple-50 transition-all shadow-2xl scale-110 active:scale-100 group"
+                >
+                  <Play className="w-12 h-12 fill-purple-600 group-hover:scale-110 transition-transform" />
+                </button>
+              ) : (
+                <button
+                  onClick={pauseSession}
+                  className="w-24 h-24 rounded-full glass-card text-gray-900 dark:text-gray-100 flex items-center justify-center hover:bg-white dark:hover:bg-gray-800 transition-all shadow-xl group"
+                >
+                  <Pause className="w-12 h-12 fill-gray-900 dark:fill-gray-100 group-hover:scale-110 transition-transform" />
+                </button>
+              )}
+
+              {(isActive || timeLeft !== 15 * 60) && (
+                <button
+                  onClick={() => endSession(false)}
+                  className="w-24 h-24 rounded-full glass-card text-red-500 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 transition-all shadow-xl group"
+                >
+                  <X className="w-12 h-12 group-hover:scale-110 transition-transform" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 w-full transition-opacity duration-500 ${isActive && isBodyDoubling ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}`}>
-          <SessionTypeSelector 
-            onCustomSelect={handleCustomSelect} 
-            onTypeSelect={handleTypeSelect}
-            selectedId={sessionType}
-          />
-          <AmbientSoundPicker />
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 w-full transition-all duration-500 ${isActive && isBodyDoubling ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0 mt-8'}`}>
+            <div className="glass-card rounded-3xl overflow-hidden shadow-xl">
+              <SessionTypeSelector 
+                onCustomSelect={handleCustomSelect} 
+                onTypeSelect={handleTypeSelect}
+                selectedId={sessionType}
+              />
+            </div>
+            <div className="glass-card rounded-3xl overflow-hidden shadow-xl">
+              <AmbientSoundPicker />
+            </div>
+          </div>
         </div>
       </div>
 

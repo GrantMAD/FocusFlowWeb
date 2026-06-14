@@ -45,31 +45,31 @@ export default function StreakCard() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-purple-600 to-indigo-700 dark:from-purple-900 dark:to-indigo-950 p-6 rounded-2xl shadow-lg text-white transition-all duration-300">
+    <div className="grad-primary p-6 rounded-2xl shadow-xl text-white transition-all duration-300 hover:scale-[1.02]">
       <div className="flex items-center justify-between mb-8">
-        <div className="bg-white/20 dark:bg-black/20 p-3 rounded-xl backdrop-blur-sm">
-          <Flame className="w-8 h-8 text-orange-400 fill-orange-400" />
+        <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md border border-white/20">
+          <Flame className="w-8 h-8 text-orange-400 fill-orange-400 animate-pulse" />
         </div>
         <div className="text-right">
-          <p className="text-purple-100 dark:text-purple-200 text-sm font-medium">Current Streak</p>
+          <p className="text-purple-100 text-[10px] font-black uppercase tracking-[0.2em]">Current Streak</p>
           <p className="text-4xl font-black">{streak?.current_streak ?? 0} Days</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/10 dark:bg-black/10 p-4 rounded-xl backdrop-blur-sm">
+        <div className="bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/10 group/stat">
           <div className="flex items-center gap-2 mb-1">
-            <Trophy className="w-4 h-4 text-yellow-400" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-200 dark:text-purple-300">Best</span>
+            <Trophy className="w-4 h-4 text-yellow-400 group-hover/stat:scale-110 transition-transform" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-purple-200">Longest</span>
           </div>
-          <p className="text-xl font-bold">{streak?.longest_streak ?? 0}</p>
+          <p className="text-xl font-black">{streak?.longest_streak ?? 0}</p>
         </div>
-        <div className="bg-white/10 dark:bg-black/10 p-4 rounded-xl backdrop-blur-sm">
+        <div className="bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/10 group/stat">
           <div className="flex items-center gap-2 mb-1">
-            <Target className="w-4 h-4 text-green-400" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-200 dark:text-purple-300">Total</span>
+            <Target className="w-4 h-4 text-green-400 group-hover/stat:scale-110 transition-transform" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-purple-200">Wins</span>
           </div>
-          <p className="text-xl font-bold">{streak?.total_tasks_completed ?? 0}</p>
+          <p className="text-xl font-black">{streak?.total_tasks_completed ?? 0}</p>
         </div>
       </div>
 

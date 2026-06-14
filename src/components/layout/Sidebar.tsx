@@ -31,7 +31,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-colors duration-300">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-purple-600">FocusFlow</h1>
+        <h1 className="text-2xl font-black text-grad">FocusFlow</h1>
       </div>
 
       <nav className="flex-1 px-4 space-y-1">
@@ -41,13 +41,13 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 isActive 
-                  ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400' 
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                  ? 'grad-primary text-white shadow-lg shadow-purple-200 dark:shadow-none scale-[1.02]' 
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : ''}`} />
               {item.label}
             </Link>
           );

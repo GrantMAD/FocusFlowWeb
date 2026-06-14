@@ -87,7 +87,7 @@ export default function MorningRitual() {
   const isRitualComplete = completedSteps.length === ritualSteps.length;
 
   return (
-    <section className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-300">
+    <section className="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-500 transition-colors duration-300">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Morning Ritual</h2>

@@ -215,68 +215,73 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-8">
-      <header className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Tasks</h1>
-          <p className="text-gray-500 dark:text-gray-400">Manage your brain dump and priorities.</p>
-        </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg hover:shadow-purple-200 dark:hover:shadow-none"
-        >
-          <Plus className="w-5 h-5" />
-          Add Task
-        </button>
-      </header>
-
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden transition-colors duration-300">
-        <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-950/50">
-          <div className="flex gap-2">
-            {['all', 'pending', 'completed'].map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f as any)}
-                className={`px-4 py-1.5 rounded-lg text-sm font-bold capitalize transition-all ${
-                  filter === f 
-                    ? 'bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 shadow-sm' 
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
+    <div className="min-h-full">
+      {/* Hero Header */}
+      <div className="grad-primary pt-12 pb-24 px-8">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-black text-white">Tasks</h1>
+            <p className="text-purple-100 font-medium">Manage your brain dump and priorities.</p>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors">
-            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-            <input 
-              type="text" 
-              placeholder="Search tasks..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="text-sm outline-none w-40 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400" 
-            />
-          </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-xl font-bold hover:bg-purple-50 transition-all shadow-xl scale-105 active:scale-100"
+          >
+            <Plus className="w-5 h-5" />
+            Add Task
+          </button>
         </div>
+      </div>
 
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={filteredTasks} strategy={verticalListSortingStrategy}>
-            <div className="divide-y divide-gray-100 dark:divide-gray-800">
-              {filteredTasks.length === 0 ? (
-                <div className="p-12 text-center">
-                  <div className="mx-auto w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle2 className="w-8 h-8 text-gray-300 dark:text-gray-600" />
-                  </div>
-                  <p className="text-gray-500 dark:text-gray-400 font-medium">No tasks found.</p>
-                </div>
-              ) : (
-                filteredTasks.map((task) => (
-                  <SortableTaskItem key={task.id} task={task} toggleTask={toggleTask} deleteTask={deleteTask} isPro={isPro} />
-                ))
-              )}
+      <div className="max-w-5xl mx-auto px-8 -mt-16 pb-12">
+        <div className="glass-card rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50">
+            <div className="flex gap-2">
+              {['all', 'pending', 'completed'].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f as any)}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-bold capitalize transition-all ${
+                    filter === f 
+                      ? 'bg-purple-600 text-white shadow-md shadow-purple-200 dark:shadow-none' 
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
             </div>
-          </SortableContext>
-        </DndContext>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors">
+              <Search className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              <input 
+                type="text" 
+                placeholder="Search tasks..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="text-sm outline-none w-40 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400" 
+              />
+            </div>
+          </div>
+
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={filteredTasks} strategy={verticalListSortingStrategy}>
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                {filteredTasks.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <div className="mx-auto w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                      <CheckCircle2 className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">No tasks found.</p>
+                  </div>
+                ) : (
+                  filteredTasks.map((task) => (
+                    <SortableTaskItem key={task.id} task={task} toggleTask={toggleTask} deleteTask={deleteTask} isPro={isPro} />
+                  ))
+                )}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
       </div>
 
       <AddTaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
