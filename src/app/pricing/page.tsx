@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 
 const tiers = [
   {
@@ -52,48 +53,54 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-20 px-4">
+    <div className="min-h-screen bg-white dark:bg-gray-950 py-20 px-4 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-black text-gray-900 mb-4">Simple, honest pricing.</h1>
-          <p className="text-lg text-gray-600">Focus on what matters. We'll handle the rest.</p>
+          <h1 className="text-5xl font-black text-gray-900 dark:text-gray-100 mb-6 leading-tight">Simple, honest pricing.</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 font-medium">Focus on what matters. We'll handle the rest.</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {tiers.map((tier) => (
             <div 
               key={tier.name}
-              className={`bg-white rounded-3xl p-8 border-2 transition-all ${
+              className={`rounded-[2.5rem] p-10 border-2 transition-all duration-500 relative flex flex-col ${
                 tier.premium 
-                  ? 'border-purple-600 shadow-xl shadow-purple-100 scale-105' 
-                  : 'border-gray-100'
+                  ? 'border-purple-600 shadow-2xl shadow-purple-200 dark:shadow-none scale-105 bg-white dark:bg-gray-900 z-10' 
+                  : 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 grayscale opacity-90'
               }`}
             >
-              <h2 className="text-xl font-bold text-gray-900 mb-2">{tier.name}</h2>
+              {tier.premium && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 grad-primary text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-lg">
+                  Most Popular
+                </div>
+              )}
+              
+              <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-2">{tier.name}</h2>
               <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-4xl font-black text-gray-900">{tier.price}</span>
-                {tier.interval && <span className="text-gray-500 font-medium">{tier.interval}</span>}
+                <span className="text-5xl font-black text-gray-900 dark:text-gray-100">{tier.price}</span>
+                {tier.interval && <span className="text-gray-500 dark:text-gray-400 font-bold">{tier.interval}</span>}
               </div>
-              <p className="text-gray-500 text-sm mb-8">{tier.description}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-10 leading-relaxed">{tier.description}</p>
 
               <button
                 onClick={() => handleAction(tier.premium)}
-                className={`w-full py-4 rounded-xl font-bold transition-all mb-8 ${
+                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all mb-10 text-sm ${
                   tier.premium 
-                    ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-200' 
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    ? 'grad-primary text-white hover:scale-[1.02] shadow-xl active:scale-100' 
+                    : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {tier.buttonText}
               </button>
 
-              <ul className="space-y-4">
+              <ul className="space-y-5 flex-1">
                 {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-sm text-gray-600">
-                    <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      tier.premium ? 'bg-purple-100 text-purple-600' : 'bg-green-100 text-green-600'
+                  <li key={feature} className="flex items-start gap-4 text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <div className={`mt-0.5 w-6 h-6 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      tier.premium ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 'bg-gray-200 dark:bg-gray-800 text-gray-400'
                     }`}>
-                      <Check className="w-3 h-3" />
+                      <Check className="w-3.5 h-3.5 stroke-[3px]" />
                     </div>
                     {feature}
                   </li>
@@ -103,15 +110,12 @@ export default function PricingPage() {
           ))}
         </div>
 
-        <p className="text-center text-sm text-gray-400 mt-12">
+        <p className="text-center text-sm text-gray-400 mt-16 font-medium">
           Already have a Pro subscription via our mobile app? 
           <br />
-          <Link href="/sign-in" className="text-purple-600 font-bold hover:underline">Sign in</Link> to unlock Pro access here.
+          <Link href="/sign-in" className="text-purple-600 dark:text-purple-400 font-black hover:underline mt-2 inline-block">Sign in to unlock Pro access here</Link>
         </p>
       </div>
     </div>
   );
 }
-
-// Need to import Link
-import Link from 'next/link';
