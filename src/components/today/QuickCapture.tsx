@@ -55,6 +55,7 @@ export default function QuickCapture() {
         .eq('user_id', user.id)
         .eq('date', new Date().toISOString().split('T')[0]);
       setIsBrainDumpDone(true);
+      completeOnboardingStep('braindump');
     }
 
     setContent('');

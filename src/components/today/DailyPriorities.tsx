@@ -10,7 +10,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function DailyPriorities() {
   const { tasks, toggleTask, fetchTasks } = useTaskStore();
-  const { user } = useAuthStore();
+  const { user, completeOnboardingStep } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const priorities = tasks.filter(t => t.is_daily_priority);
 
@@ -24,6 +24,8 @@ export default function DailyPriorities() {
         .update({ daily_priorities_set: true })
         .eq('user_id', user.id)
         .eq('date', new Date().toISOString().split('T')[0]);
+
+      completeOnboardingStep('priorities');
     };
 
     updatePrioritiesSet();

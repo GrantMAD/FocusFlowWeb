@@ -13,6 +13,7 @@ type AuthStore = {
   setProfile: (profile: Profile | null) => void;
   fetchProfile: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ data: Profile | null; error: any }>;
+  completeOnboardingStep: (stepId: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -56,6 +57,27 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ profile: data });
     }
     return { data, error };
+  },
+
+  completeOnboardingStep: async (stepId: string) => {
+    const { user, profile } = get();
+    if (!user || !profile) return;
+
+    const currentProgress = (profile as any).onboarding_progress || {};
+    if (currentProgress[stepId]) return;
+
+    const newProgress = { ...currentProgress, [stepId]: true };
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ onboarding_progress: newProgress })
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      set({ profile: data });
+    }
   },
 
   signOut: async () => {

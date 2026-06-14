@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useFocusStore } from '@/stores/focusStore';
 import { useTaskStore } from '@/stores/taskStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useSubscription } from '@/hooks/useSubscription';
 import SessionTypeSelector from '@/components/focus/SessionTypeSelector';
 import AmbientSoundPicker from '@/components/focus/AmbientSoundPicker';
@@ -34,6 +35,7 @@ export default function FocusPage() {
   } = useFocusStore();
   const { tasks, fetchTasks } = useTaskStore();
   const { isPro } = useSubscription();
+  const { completeOnboardingStep } = useAuthStore();
 
   const [showPreSession, setShowPreSession] = useState(false);
   const [showPostSession, setShowPostSession] = useState(false);
@@ -102,6 +104,7 @@ export default function FocusPage() {
     
     startSession(type, duration, selectedTaskId || undefined, moodBefore);
     setShowPreSession(false);
+    completeOnboardingStep('focus');
   };
 
   const handleCompleteSession = async () => {

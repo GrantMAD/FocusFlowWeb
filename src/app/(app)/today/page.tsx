@@ -8,6 +8,7 @@ import MorningRitual from '@/components/today/MorningRitual';
 import EveningReflection from '@/components/today/EveningReflection';
 import StreakCard from '@/components/today/StreakCard';
 import QuickCapture from '@/components/today/QuickCapture';
+import OnboardingChecklist from '@/components/ui/OnboardingChecklist';
 
 export default function TodayPage() {
   const { fetchProfile } = useAuthStore();
@@ -29,7 +30,9 @@ export default function TodayPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-8 -mt-16 pb-12">
+      <div className="max-w-6xl mx-auto px-8 -mt-16 pb-12 space-y-8">
+        <OnboardingChecklist />
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <DailyPriorities />

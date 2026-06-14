@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Coffee, Brain, PenTool, CheckCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { useAuthStore } from '@/stores/authStore';
 
 const ritualSteps = [
   { id: 'hydration', label: 'Hydration', icon: Coffee, description: 'Drink a glass of water.', dbColumn: 'ritual_hydration' },
@@ -85,6 +86,13 @@ export default function MorningRitual() {
   };
 
   const isRitualComplete = completedSteps.length === ritualSteps.length;
+  const { completeOnboardingStep } = useAuthStore();
+
+  useEffect(() => {
+    if (isRitualComplete) {
+      completeOnboardingStep('ritual');
+    }
+  }, [isRitualComplete]);
 
   return (
     <section className="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-500 transition-colors duration-300">

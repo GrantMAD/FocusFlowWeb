@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Moon, Sun, Pill, MessageSquare, CheckCircle2, Star, Zap } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/stores/authStore';
 
 const MOODS = [
   { value: 1, label: '😩' },
@@ -90,6 +91,8 @@ export default function EveningReflection() {
     } else {
       setReflection(prev => ({ ...prev, evening_reflection_completed: true }));
       toast.success('Reflection completed!');
+      const { completeOnboardingStep } = useAuthStore.getState();
+      completeOnboardingStep('reflection');
     }
     setIsSaving(false);
   };
