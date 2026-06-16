@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import { Flame, Trophy, Target } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Streak } from '@/types';
+import { createNotification } from '@/lib/notifications';
 
 import { useAuthStore } from '@/stores/authStore';
 
 export default function StreakCard() {
   const [streak, setStreak] = useState<Streak | null>(null);
+  const [minutesToday, setMinutesToday] = useState(0);
   const { user } = useAuthStore();
   const supabase = createClient();
 
@@ -16,6 +18,7 @@ export default function StreakCard() {
     if (!user) return;
 
     fetchStreak(user.id);
+    fetchDailyMinutes(user.id);
     
     const channel = supabase
       .channel(`streak_changes_${user.id}_${Math.random().toString(36).substring(7)}`)
@@ -24,15 +27,42 @@ export default function StreakCard() {
         schema: 'public',
         table: 'streaks',
         filter: `user_id=eq.${user.id}`,
-      }, () => {
-        fetchStreak(user.id);
+      }, (payload) => {
+        const newStreak = payload.new as Streak;
+        if (streak && newStreak.current_streak > streak.current_streak) {
+          handleStreakMilestone(newStreak.current_streak);
+        }
+        setStreak(newStreak);
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, streak?.current_streak]);
+
+  const fetchDailyMinutes = async (userId: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase.rpc('get_weekly_stats', { 
+      p_user_id: userId,
+      p_start_date: today
+    });
+    if (data?.[0]) setMinutesToday(Number(data[0].total_focus_minutes));
+  };
+
+  const handleStreakMilestone = async (days: number) => {
+    if (!user) return;
+    
+    const milestones = [3, 7, 14, 30, 50, 100];
+    if (milestones.includes(days)) {
+      await createNotification(
+        user.id,
+        `${days}-Day Streak! 🔥`,
+        `Incredible consistency! You've shown up for ${days} days in a row.`,
+        'streak'
+      );
+    }
+  };
 
   const fetchStreak = async (userId: string) => {
     const { data } = await supabase
@@ -75,7 +105,11 @@ export default function StreakCard() {
 
       <div className="mt-6 pt-6 border-t border-white/10 dark:border-white/5">
         <p className="text-sm text-purple-100 dark:text-purple-200">
-          Focus for <span className="font-bold">15 more minutes</span> today to keep your streak alive!
+          {minutesToday >= 10 ? (
+            <span>Streak is <span className="font-bold">safe</span> for today! Keep it up. 🔥</span>
+          ) : (
+            <span>Focus for <span className="font-bold">{10 - minutesToday} more minutes</span> today to keep your streak alive!</span>
+          )}
         </p>
       </div>
     </div>

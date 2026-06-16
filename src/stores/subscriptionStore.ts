@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createClient } from '@/lib/supabase/client';
+import { createNotification } from '@/lib/notifications';
 
 type SubscriptionStatus = 'free' | 'trial' | 'active' | 'cancelled' | 'expired' | 'lifetime';
 
@@ -56,11 +57,22 @@ export const useSubscriptionStore = create<SubscriptionStore>((set) => ({
         filter: `user_id=eq.${userId}`,
       }, (payload) => {
         const d = payload.new as any;
+        const newIsPro = computeIsPro(d.status, d.current_period_ends_at);
+        
+        if (newIsPro && !useSubscriptionStore.getState().isPro) {
+          createNotification(
+            userId,
+            'Welcome to Pro! ⭐',
+            'You now have full access to FocusFlow. Enjoy all ambient sounds and history!',
+            'success'
+          );
+        }
+
         set({
           status: d.status,
           paymentSource: d.payment_source,
           currentPeriodEndsAt: d.current_period_ends_at,
-          isPro: computeIsPro(d.status, d.current_period_ends_at),
+          isPro: newIsPro,
         });
       })
       .subscribe();

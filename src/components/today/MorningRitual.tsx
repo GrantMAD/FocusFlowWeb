@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Coffee, Brain, PenTool, CheckCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
+import { createNotification } from '@/lib/notifications';
 
 const ritualSteps = [
   { id: 'hydration', label: 'Hydration', icon: Coffee, description: 'Drink a glass of water.', dbColumn: 'ritual_hydration' },
@@ -23,10 +24,12 @@ const MOODS = [
 export default function MorningRitual() {
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [moodMorning, setMoodMorning] = useState<number | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [hasNotified, setHasNotified] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
-    fetchRitualStatus();
+    fetchRitualStatus().then(() => setIsInitialized(true));
   }, []);
 
   const fetchRitualStatus = async () => {
@@ -43,6 +46,7 @@ export default function MorningRitual() {
         .map(step => step.id);
       setCompletedSteps(activeSteps);
       setMoodMorning(log.mood_morning);
+      if (log.morning_ritual_completed) setHasNotified(true);
     }
   };
 
@@ -89,10 +93,24 @@ export default function MorningRitual() {
   const { completeOnboardingStep } = useAuthStore();
 
   useEffect(() => {
-    if (isRitualComplete) {
+    if (isRitualComplete && isInitialized && !hasNotified) {
       completeOnboardingStep('ritual');
+      setHasNotified(true);
+      
+      const sendNotification = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await createNotification(
+            user.id,
+            'Ritual Complete! ☕',
+            'You started your day with intention. Great work!',
+            'success'
+          );
+        }
+      };
+      sendNotification();
     }
-  }, [isRitualComplete]);
+  }, [isRitualComplete, isInitialized, hasNotified]);
 
   return (
     <section className="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-500 transition-colors duration-300">

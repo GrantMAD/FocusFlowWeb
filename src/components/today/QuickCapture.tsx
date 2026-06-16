@@ -5,10 +5,11 @@ import { useBrainDumpStore } from '@/stores/brainDumpStore';
 import { Plus, Trash2, Brain, Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
+import { createNotification } from '@/lib/notifications';
 
 export default function QuickCapture() {
   const { items, fetchItems, addItem, deleteItem, convertToTask } = useBrainDumpStore();
-  const { user } = useAuthStore();
+  const { user, completeOnboardingStep } = useAuthStore();
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isBrainDumpDone, setIsBrainDumpDone] = useState(false);
@@ -56,6 +57,13 @@ export default function QuickCapture() {
         .eq('date', new Date().toISOString().split('T')[0]);
       setIsBrainDumpDone(true);
       completeOnboardingStep('braindump');
+      
+      await createNotification(
+        user.id,
+        'Captured! 🧠',
+        "That's one less thing to worry about. We've saved it to your brain dump.",
+        'info'
+      );
     }
 
     setContent('');

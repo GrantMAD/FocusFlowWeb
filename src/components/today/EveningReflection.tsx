@@ -5,6 +5,7 @@ import { Moon, Sun, Pill, MessageSquare, CheckCircle2, Star, Zap } from 'lucide-
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
+import { createNotification } from '@/lib/notifications';
 
 const MOODS = [
   { value: 1, label: '😩' },
@@ -93,6 +94,16 @@ export default function EveningReflection() {
       toast.success('Reflection completed!');
       const { completeOnboardingStep } = useAuthStore.getState();
       completeOnboardingStep('reflection');
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await createNotification(
+          user.id,
+          'Evening Reflection Done! 🌙',
+          'You completed your daily reflection. Time to rest your mind.',
+          'success'
+        );
+      }
     }
     setIsSaving(false);
   };
