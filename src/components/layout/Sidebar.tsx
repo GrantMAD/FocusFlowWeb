@@ -30,7 +30,7 @@ export default function Sidebar() {
   const displayName = profile?.full_name || user?.user_metadata?.full_name || 'User';
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-colors duration-300">
+    <aside className="hidden md:flex w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-colors duration-300">
       <div className="p-6 flex justify-between items-center">
         <h1 className="text-2xl font-black text-grad">FocusFlow</h1>
         <NotificationBell />

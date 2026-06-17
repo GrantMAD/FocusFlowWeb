@@ -38,12 +38,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       .eq('user_id', user.id)
       .single();
 
-    if (data) set({ profile: data });
+    if (data) set({ profile: data as Profile });
   },
 
   updateProfile: async (updates: Partial<Profile>) => {
-    const { user, profile } = get();
-    if (!user) return;
+    const { user } = get();
+    if (!user) return { data: null, error: 'No user session' };
 
     const supabase = createClient();
     const { data, error } = await supabase
@@ -54,16 +54,16 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       .single();
 
     if (!error && data) {
-      set({ profile: data });
+      set({ profile: data as Profile });
     }
-    return { data, error };
+    return { data: data as Profile | null, error };
   },
 
   completeOnboardingStep: async (stepId: string) => {
     const { user, profile } = get();
     if (!user || !profile) return;
 
-    const currentProgress = (profile as any).onboarding_progress || {};
+    const currentProgress = profile.onboarding_progress || {};
     if (currentProgress[stepId]) return;
 
     const newProgress = { ...currentProgress, [stepId]: true };
@@ -76,7 +76,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       .single();
 
     if (!error && data) {
-      set({ profile: data });
+      set({ profile: data as Profile });
     }
   },
 

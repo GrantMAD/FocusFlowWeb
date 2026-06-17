@@ -9,6 +9,7 @@ type NotificationStore = {
   fetchNotifications: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
   subscribeToNotifications: (userId: string) => () => void;
 };
 
@@ -74,18 +75,41 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
     }
   },
 
+  deleteNotification: async (id: string) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      const newNotifications = get().notifications.filter(n => n.id !== id);
+      set({ 
+        notifications: newNotifications,
+        unreadCount: newNotifications.filter(n => !n.is_read).length 
+      });
+    }
+  },
+
   subscribeToNotifications: (userId: string) => {
     const supabase = createClient();
+    
+    // Create a unique channel name to avoid conflicts if multiple subscriptions are attempted
+    const channelId = `notifications_${userId}_${Date.now()}`;
+    
     const channel = supabase
-      .channel(`notifications_realtime_${userId}`)
+      .channel(channelId)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
         table: 'notifications',
+        filter: `user_id=eq.${userId}`,
       }, () => {
         get().fetchNotifications();
-      })
-      .subscribe();
+      });
+
+    // CRITICAL: Call subscribe() AFTER all .on() listeners are attached
+    channel.subscribe();
 
     return () => {
       supabase.removeChannel(channel);
