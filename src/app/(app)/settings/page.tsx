@@ -48,6 +48,7 @@ export default function SettingsPage() {
     <div className="max-w-4xl mx-auto p-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your account preferences and subscription.</p>
       </header>
 
       <div className="flex flex-col md:flex-row gap-8">
@@ -76,7 +77,8 @@ export default function SettingsPage() {
           {activeTab === 'profile' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Your Profile</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Your Profile</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Update your personal information and how you appear in FocusFlow.</p>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
@@ -111,7 +113,10 @@ export default function SettingsPage() {
 
           {activeTab === 'billing' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Subscription Plan</h3>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Subscription Plan</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Manage your subscription and billing details.</p>
+              </div>
               <div className={`p-6 rounded-xl border-2 transition-colors ${isPro ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -136,7 +141,12 @@ export default function SettingsPage() {
 
           {activeTab === 'appearance' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Theme</h3>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Theme</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic mb-4">
+                  Theme changes are saved to your profile and apply instantly across the app.
+                </p>
+              </div>
               <div className="grid grid-cols-3 gap-4">
                 {(['light', 'dark', 'system'] as const).map((t) => (
                   <button 
@@ -152,9 +162,6 @@ export default function SettingsPage() {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                Theme changes are saved to your profile and apply instantly across the app.
-              </p>
             </div>
           )}
         </main>

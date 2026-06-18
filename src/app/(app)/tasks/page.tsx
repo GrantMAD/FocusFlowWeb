@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTaskStore } from '@/stores/taskStore';
-import { Plus } from 'lucide-react';
+import { Plus, CheckSquare } from 'lucide-react';
 import AddTaskModal from '@/components/tasks/AddTaskModal';
 import { useSubscription } from '@/hooks/useSubscription';
 import PriorityFilter from '@/components/tasks/PriorityFilter';
@@ -43,9 +43,14 @@ export default function TasksPage() {
       {/* Hero Header */}
       <div className="grad-primary pt-12 pb-24 px-8">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-black text-white">Tasks</h1>
-            <p className="text-purple-100 font-medium">Manage your brain dump and priorities.</p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm text-white shadow-lg">
+              <CheckSquare className="w-8 h-8" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black text-white">Tasks</h1>
+              <p className="text-purple-100 font-medium">Manage your brain dump and priorities.</p>
+            </div>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}

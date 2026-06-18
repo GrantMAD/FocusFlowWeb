@@ -51,13 +51,15 @@ export default function TaskCard({ task, toggleTask, deleteTask, isPro }: TaskCa
           <GripVertical className="w-5 h-5" />
         </div>
         
-        {isPro && totalChunks > 0 && (
+        {isPro ? (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-gray-400 hover:text-purple-600 transition-colors"
+            className={`text-gray-400 hover:text-purple-600 transition-colors ${totalChunks === 0 ? 'opacity-0' : 'opacity-100'}`}
           >
             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
+        ) : (
+          <div className="w-4"></div>
         )}
 
         <button onClick={() => toggleTask(task.id)}>

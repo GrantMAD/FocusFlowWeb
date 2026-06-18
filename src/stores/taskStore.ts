@@ -83,7 +83,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       .from('tasks')
       .select('*')
       .eq('user_id', user.id)
-      .order('task_order', { ascending: true }); // Changed from order to task_order
+      .order('created_at', { ascending: false });
 
     if (data) set({ tasks: data as Task[], isLoading: false });
     else set({ isLoading: false });

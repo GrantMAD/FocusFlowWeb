@@ -11,6 +11,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { Clock, CheckSquare } from 'lucide-react';
 
 interface WeeklyChartData {
   day: string;
@@ -30,9 +31,13 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Focus Minutes */}
       <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
-          Focus Minutes
-        </h3>
+        <div className="flex items-center gap-2 mb-1">
+          <Clock className="w-5 h-5 text-purple-600" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            Focus Minutes
+          </h3>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Track your daily focus time.</p>
 
         <div className="h-64 w-full min-h-64">
           <ResponsiveContainer width="100%" height={256}>
@@ -78,9 +83,13 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
 
       {/* Tasks Completed */}
       <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">
-          Tasks Completed
-        </h3>
+        <div className="flex items-center gap-2 mb-1">
+          <CheckSquare className="w-5 h-5 text-emerald-500" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            Tasks Completed
+          </h3>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Visualize your completed tasks over the week.</p>
 
         <div className="h-64 w-full min-h-64">
           <ResponsiveContainer width="100%" height={256}>

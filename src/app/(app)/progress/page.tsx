@@ -4,6 +4,8 @@ import { StatsGrid } from '@/components/progress/StatsGrid';
 import { WinsFeed } from '@/components/progress/WinsFeed';
 import WeeklyChartWrapper from '@/components/progress/WeeklyChartWrapper';
 
+import { LineChart } from 'lucide-react';
+
 export default async function ProgressPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -39,9 +41,14 @@ export default async function ProgressPage() {
     <div className="min-h-full">
       {/* Hero Header */}
       <div className="grad-primary pt-12 pb-24 px-8">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-black text-white">Progress</h1>
-          <p className="text-purple-100 font-medium">Your focus journey, visualized.</p>
+        <div className="max-w-6xl mx-auto flex items-center gap-4">
+          <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm text-white shadow-lg">
+            <LineChart className="w-8 h-8" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-black text-white">Progress</h1>
+            <p className="text-purple-100 font-medium">Your focus journey, visualized.</p>
+          </div>
         </div>
       </div>
 

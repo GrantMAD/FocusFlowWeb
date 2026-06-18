@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckCircle2, Circle, Coffee, Brain, PenTool, CheckCircle } from 'lucide-react';
+import { CheckCircle2, Circle, Coffee, Brain, PenTool, CheckCircle, Sun } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { createNotification } from '@/lib/notifications';
@@ -115,9 +115,14 @@ export default function MorningRitual() {
   return (
     <section className="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-500 transition-colors duration-300">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Morning Ritual</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Start your day with intention.</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
+            <Sun className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Morning Ritual</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Start your day with intention.</p>
+          </div>
         </div>
         {isRitualComplete && (
           <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold rounded-full uppercase">

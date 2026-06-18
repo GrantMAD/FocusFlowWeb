@@ -73,10 +73,11 @@ export default function QuickCapture() {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden transition-colors duration-300">
       <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-purple-50/30 dark:bg-purple-900/10">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-1">
           <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
           <h3 className="font-bold text-gray-900 dark:text-gray-100">Brain Dump</h3>
         </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">Clear your head by capturing everything on your mind.</p>
         
         <form onSubmit={handleSubmit} className="relative">
           <input

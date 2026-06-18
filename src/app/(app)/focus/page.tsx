@@ -19,6 +19,21 @@ const MOODS = [
   { value: 5, label: '🤩' },
 ];
 
+const getSessionDescription = (type: string) => {
+  switch (type) {
+    case 'pomodoro':
+      return 'Use the Pomodoro technique to stay focused and avoid burnout.';
+    case 'body_doubling':
+      return 'Stay focused with the help of a body doubling partner.';
+    case 'deep_work':
+      return 'Enter a state of deep concentration for maximum productivity.';
+    case 'custom':
+      return 'Custom focus session tailored to your needs.';
+    default:
+      return 'Stay focused and get things done.';
+  }
+};
+
 export default function FocusPage() {
   const { 
     isActive, 
@@ -141,9 +156,16 @@ export default function FocusPage() {
               {mode === 'work' ? (isBodyDoubling ? 'Body Doubling' : 'Focus Time') : 'Break Time'}
             </span>
             {!isBodyDoubling && (
-              <h1 className="mt-6 text-5xl font-black text-white drop-shadow-sm">
-                {mode === 'work' ? 'Get into the flow' : 'Take a breather'}
-              </h1>
+              <>
+                <h1 className="mt-6 text-5xl font-black text-white drop-shadow-sm">
+                  {mode === 'work' ? 'Get into the flow' : 'Take a breather'}
+                </h1>
+                <p className="mt-2 text-purple-100 font-medium opacity-90 max-w-md mx-auto">
+                  {mode === 'work' 
+                    ? getSessionDescription(sessionType)
+                    : 'Take a short break to recharge your mental energy.'}
+                </p>
+              </>
             )}
             {!isPro && (
               <p className="mt-3 text-sm text-purple-100 font-bold">
