@@ -12,6 +12,7 @@ import {
   LogOut 
 } from 'lucide-react';
 import NotificationBell from './NotificationBell';
+import AvatarImage from '@/components/ui/AvatarImage';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 
@@ -74,8 +75,12 @@ export default function Sidebar() {
           className="flex items-center gap-3 px-3 py-2 mb-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer text-left w-full block"
         >
           <div className="flex items-center gap-3 w-full">
-            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-700 dark:text-purple-400 font-bold uppercase shrink-0">
-              {displayName[0]}
+            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-700 dark:text-purple-400 font-bold uppercase shrink-0 overflow-hidden">
+              {profile?.avatar_url ? (
+                <AvatarImage src={profile.avatar_url} fallback={displayName[0]} />
+              ) : (
+                <span>{displayName[0]}</span>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">

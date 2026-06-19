@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscription } from '@/hooks/useSubscription';
-import { User, Bell, Palette, CreditCard, Save, Loader2 } from 'lucide-react';
+import { User, Bell, Palette, CreditCard, Save, Loader2, Camera, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { createClient } from '@/lib/supabase/client';
+import AvatarImage from '@/components/ui/AvatarImage';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'profile' | 'billing' | 'appearance'>('profile');
@@ -15,12 +17,88 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Avatar state
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || '');
       setTheme(profile.theme || 'system');
+      setAvatarPreview(profile.avatar_url || null);
     }
   }, [profile]);
+
+  const displayName = profile?.full_name || user?.user_metadata?.full_name || 'User';
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate type & size (max 2 MB)
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be smaller than 2 MB');
+      return;
+    }
+
+    // Optimistic local preview
+    const objectUrl = URL.createObjectURL(file);
+    setAvatarPreview(objectUrl);
+    setIsUploadingAvatar(true);
+
+    try {
+      const supabase = createClient();
+      const ext = file.name.split('.').pop();
+      const filePath = `avatars/${user.id}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Add cache-bust so the browser fetches the new image
+      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      const { error: profileError } = await updateProfile({ avatar_url: publicUrl });
+      if (profileError) throw profileError;
+
+      setAvatarPreview(publicUrl);
+      toast.success('Avatar updated!');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to upload avatar');
+      setAvatarPreview(profile?.avatar_url || null);
+    } finally {
+      setIsUploadingAvatar(false);
+      URL.revokeObjectURL(objectUrl);
+      // Reset file input so the same file can be re-selected if needed
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+    setIsUploadingAvatar(true);
+    try {
+      const { error } = await updateProfile({ avatar_url: null });
+      if (error) throw error;
+      setAvatarPreview(null);
+      toast.success('Avatar removed');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to remove avatar');
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
@@ -79,6 +157,57 @@ export default function SettingsPage() {
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Your Profile</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Update your personal information and how you appear in FocusFlow.</p>
+
+                {/* Avatar Upload */}
+                <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-100 dark:border-gray-800">
+                  <div className="relative shrink-0">
+                    <div className="w-20 h-20 rounded-2xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-700 dark:text-purple-400 font-black text-2xl uppercase overflow-hidden">
+                      {avatarPreview ? (
+                        <AvatarImage src={avatarPreview} fallback={displayName[0]} />
+                      ) : (
+                        <span>{displayName[0]}</span>
+                      )}
+                    </div>
+                    {isUploadingAvatar && (
+                      <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
+                        <Loader2 className="w-5 h-5 text-white animate-spin" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Profile Photo</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">JPG, PNG or GIF · max 2 MB</p>
+                    <div className="flex gap-2 mt-1">
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingAvatar}
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-all disabled:opacity-50"
+                      >
+                        <Camera className="w-3 h-3" />
+                        {avatarPreview ? 'Change' : 'Upload'}
+                      </button>
+                      {avatarPreview && (
+                        <button
+                          onClick={handleRemoveAvatar}
+                          disabled={isUploadingAvatar}
+                          className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-red-300 hover:text-red-500 transition-all disabled:opacity-50"
+                        >
+                          <X className="w-3 h-3" />
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarFileChange}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>

@@ -9,6 +9,7 @@ export type Profile = {
   id: string;
   user_id: string;
   full_name: string;
+  avatar_url: string | null;
   diagnosis_status: 'diagnosed' | 'self_identified' | 'exploring';
   primary_struggles: string[];
   primary_goals: string[];

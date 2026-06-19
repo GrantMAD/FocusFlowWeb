@@ -1,6 +1,7 @@
 'use client';
 
 import NotificationBell from './NotificationBell';
+import AvatarImage from '@/components/ui/AvatarImage';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function TopNav() {
@@ -13,8 +14,12 @@ export default function TopNav() {
       
       <div className="flex items-center gap-4">
         <NotificationBell />
-        <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-700 dark:text-purple-400 font-bold uppercase text-xs">
-          {displayName[0]}
+        <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-700 dark:text-purple-400 font-bold uppercase text-xs overflow-hidden">
+          {profile?.avatar_url ? (
+            <AvatarImage src={profile.avatar_url} fallback={displayName[0]} />
+          ) : (
+            <span>{displayName[0]}</span>
+          )}
         </div>
       </div>
     </header>
